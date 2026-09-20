@@ -63,8 +63,7 @@
     }
     .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
 
-    .sidebar-header { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-
+    .sidebar-header { padding: 8px; }
     .new-chat-btn {
       display: flex; align-items: center; gap: 10px;
       width: 100%; padding: 10px 12px;
@@ -203,12 +202,11 @@
       background: transparent; border: none; color: var(--text-secondary);
       cursor: pointer; padding: 8px; border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, color 0.15s; position: relative;
+      transition: background 0.15s, color 0.15s;
     }
     .top-action-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
     .top-action-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    /* Status badge */
     .status-badge {
       display: flex; align-items: center; gap: 5px;
       padding: 5px 10px; border-radius: 20px;
@@ -218,7 +216,6 @@
       cursor: pointer; transition: all 0.15s;
     }
     .status-badge.online { background: rgba(16,163,127,0.15); color: var(--accent); border-color: rgba(16,163,127,0.3); }
-    .status-badge:hover { transform: scale(1.02); }
     .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
     /* CHAT */
@@ -507,6 +504,24 @@
     .switch.on { background: var(--accent); }
     .switch.on::after { transform: translateX(20px); }
 
+    .api-input {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg-input); border: 1px solid var(--border-color);
+      border-radius: 8px; color: var(--text-primary);
+      font-family: var(--font-mono); font-size: 0.78rem;
+      outline: none; transition: border-color 0.15s;
+      margin-top: 6px;
+    }
+    .api-input:focus { border-color: var(--accent); }
+    .api-hint {
+      font-size: 0.72rem; color: var(--text-muted);
+      margin-top: 4px; line-height: 1.5;
+    }
+    .api-hint a {
+      color: var(--accent); text-decoration: none;
+    }
+    .api-hint a:hover { text-decoration: underline; }
+
     .modal-footer {
       padding: 16px 20px; border-top: 1px solid var(--border-color);
       display: flex; gap: 10px; justify-content: flex-end;
@@ -555,28 +570,31 @@
       color: var(--text-primary); min-width: 24px; text-align: center;
     }
 
-    /* Debug panel */
-    .debug-panel {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      max-height: 40vh; overflow-y: auto;
-      background: #0a0a0a; color: #a0ffa0;
-      font-family: var(--font-mono); font-size: 0.72rem;
-      padding: 12px; border-top: 2px solid #333;
-      display: none; z-index: 999;
-      white-space: pre-wrap; word-break: break-all;
+    /* Setup banner */
+    .setup-banner {
+      background: linear-gradient(135deg, rgba(16,163,127,0.15), rgba(16,163,127,0.05));
+      border: 1px solid rgba(16,163,127,0.4);
+      border-radius: 12px; padding: 16px 20px;
+      margin: 20px auto; max-width: 640px;
+      display: flex; flex-direction: column; gap: 8px;
     }
-    .debug-panel.open { display: block; }
-    .debug-panel .debug-line { padding: 2px 0; border-bottom: 1px solid #1a1a1a; }
-    .debug-panel .debug-time { color: #666; margin-right: 8px; }
-    .debug-panel .debug-error { color: #ff6b6b; }
-    .debug-panel .debug-success { color: #6bff6b; }
-    .debug-panel .debug-info { color: #6bb6ff; }
-    .debug-close {
-      position: sticky; top: 0; float: right;
-      background: #333; color: white; border: none;
-      padding: 4px 10px; border-radius: 4px; cursor: pointer;
-      font-family: inherit; font-size: 0.7rem;
+    .setup-banner h3 {
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--text-primary);
+      display: flex; align-items: center; gap: 8px;
     }
+    .setup-banner p {
+      font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;
+    }
+    .setup-banner code {
+      background: var(--code-bg); padding: 2px 6px; border-radius: 4px;
+      font-family: var(--font-mono); font-size: 0.78em;
+      color: var(--accent);
+    }
+    .setup-banner a {
+      color: var(--accent); text-decoration: none; font-weight: 600;
+    }
+    .setup-banner a:hover { text-decoration: underline; }
 
     /* MOBILE */
     .sidebar-overlay {
@@ -634,10 +652,6 @@
         <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/><line x1="6" y1="14" x2="18" y2="14"/></svg>
         Keyboard shortcuts
       </button>
-      <button class="footer-btn" id="debugBtn">
-        <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Debug console
-      </button>
       <button class="footer-btn" id="exportAllBtn">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Export all chats
@@ -659,29 +673,36 @@
 
       <div class="model-selector-wrapper">
         <button class="model-selector" id="modelSelector">
-          <span id="modelLabel">Test</span>
+          <span id="modelLabel">Llama 3.1 8B</span>
           <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="model-dropdown" id="modelDropdown">
-          <button class="dropdown-item active" data-model="Test" data-desc="Fast & balanced">
+          <button class="dropdown-item active" data-model="llama-3.1-8b-instant" data-desc="Fast & efficient">
             <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             <div class="dropdown-item-info">
-              <div class="dropdown-item-title">Test</div>
-              <div class="dropdown-item-desc">Fast & balanced · default</div>
+              <div class="dropdown-item-title">Llama 3.1 8B</div>
+              <div class="dropdown-item-desc">Fast & efficient · default</div>
             </div>
           </button>
-          <button class="dropdown-item" data-model="Test Pro" data-desc="More capable & detailed">
+          <button class="dropdown-item" data-model="llama-3.3-70b-versatile" data-desc="Most capable">
             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <div class="dropdown-item-info">
-              <div class="dropdown-item-title">Test Pro</div>
-              <div class="dropdown-item-desc">More capable & detailed</div>
+              <div class="dropdown-item-title">Llama 3.3 70B</div>
+              <div class="dropdown-item-desc">Most capable · slower</div>
             </div>
           </button>
-          <button class="dropdown-item" data-model="Test Creative" data-desc="More imaginative responses">
+          <button class="dropdown-item" data-model="mixtral-8x7b-32768" data-desc="Long context">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
             <div class="dropdown-item-info">
-              <div class="dropdown-item-title">Test Creative</div>
-              <div class="dropdown-item-desc">More imaginative responses</div>
+              <div class="dropdown-item-title">Mixtral 8x7B</div>
+              <div class="dropdown-item-desc">Long context window</div>
+            </div>
+          </button>
+          <button class="dropdown-item" data-model="gemma2-9b-it" data-desc="Google's model">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <div class="dropdown-item-info">
+              <div class="dropdown-item-title">Gemma 2 9B</div>
+              <div class="dropdown-item-desc">Google's compact model</div>
             </div>
           </button>
         </div>
@@ -734,12 +755,6 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- DEBUG PANEL -->
-<div class="debug-panel" id="debugPanel">
-  <button class="debug-close" id="debugClose">Close ✕</button>
-  <div id="debugLog"></div>
-</div>
-
 <!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settingsModal">
   <div class="modal">
@@ -750,6 +765,14 @@
       </button>
     </div>
     <div class="modal-body">
+      <div class="setting-group">
+        <div class="setting-label">API Key (Groq)</div>
+        <input type="password" class="api-input" id="apiKeyInput" placeholder="gsk_..." />
+        <div class="api-hint">
+          Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a> — no credit card required. Your key is stored locally in your browser only.
+        </div>
+      </div>
+
       <div class="setting-group">
         <div class="setting-label">Appearance</div>
         <div class="setting-options">
@@ -771,9 +794,9 @@
       </div>
 
       <div class="setting-group">
-        <div class="setting-label">Response creativity</div>
+        <div class="setting-label">Response creativity (temperature)</div>
         <div class="range-row">
-          <input type="range" id="temperatureRange" min="0" max="10" value="7" />
+          <input type="range" id="temperatureRange" min="0" max="20" value="7" />
           <span class="range-value" id="temperatureValue">0.7</span>
         </div>
         <div style="font-size:0.75rem; color:var(--text-muted);">Lower = more focused · Higher = more creative</div>
@@ -802,31 +825,6 @@
           </div>
           <button class="switch on" id="enterToggle"></button>
         </div>
-        <div class="toggle-row">
-          <div>
-            <div class="toggle-label">Offline fallback mode</div>
-            <div class="toggle-desc">Use local responses when API fails</div>
-          </div>
-          <button class="switch on" id="fallbackToggle"></button>
-        </div>
-      </div>
-
-      <div class="setting-group">
-        <div class="setting-label">API Configuration</div>
-        <div class="setting-option" style="cursor:default;">
-          <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          <div class="setting-option-info">
-            <div class="setting-option-title">Endpoint</div>
-            <div class="setting-option-desc" id="apiEndpointDisplay" style="word-break:break-all;">Loading...</div>
-          </div>
-        </div>
-        <button class="setting-option" id="testApiBtn">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          <div class="setting-option-info">
-            <div class="setting-option-title">Test API connection</div>
-            <div class="setting-option-desc">Check if the endpoint is reachable</div>
-          </div>
-        </button>
       </div>
 
       <div class="setting-group">
@@ -849,6 +847,7 @@
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-primary" id="saveSettingsBtn">Save</button>
       <button class="btn btn-secondary" data-close="settingsModal">Close</button>
     </div>
   </div>
@@ -872,7 +871,6 @@
       <div class="shortcut-row"><span>Toggle theme</span><div class="shortcut-keys"><span class="kbd">Ctrl</span><span class="kbd">J</span></div></div>
       <div class="shortcut-row"><span>Settings</span><div class="shortcut-keys"><span class="kbd">Ctrl</span><span class="kbd">,</span></div></div>
       <div class="shortcut-row"><span>Focus input</span><div class="shortcut-keys"><span class="kbd">/</span></div></div>
-      <div class="shortcut-row"><span>Debug console</span><div class="shortcut-keys"><span class="kbd">Ctrl</span><span class="kbd">D</span></div></div>
       <div class="shortcut-row"><span>Export current chat</span><div class="shortcut-keys"><span class="kbd">Ctrl</span><span class="kbd">E</span></div></div>
       <div class="shortcut-row"><span>Close dialog</span><div class="shortcut-keys"><span class="kbd">Esc</span></div></div>
     </div>
@@ -906,10 +904,11 @@
   'use strict';
 
   // ================================================================
-  // CONFIG
+  // CONFIG — Using Groq (free, working API)
   // ================================================================
-  const API_KEY = 'ma_live_88vfkvtphuu7g3bwnkmgyktfwnz9hsuq';
-  const API_URL = 'https://ma-api-system-1.vercel.app/api/auto';
+  const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+  // NOTE: The API key is stored in localStorage and set via Settings modal.
+  // Get a free key at https://console.groq.com/keys
 
   // ================================================================
   // DOM
@@ -934,38 +933,6 @@
   const voiceBtn = $('voiceBtn');
   const statusBadge = $('statusBadge');
   const statusText = $('statusText');
-  const debugPanel = $('debugPanel');
-  const debugLog = $('debugLog');
-
-  // ================================================================
-  // DEBUG LOGGER
-  // ================================================================
-  const debugMessages = [];
-  function debugLog_(type, ...args) {
-    const time = new Date().toLocaleTimeString();
-    const msg = args.map(a => {
-      if (typeof a === 'object') { try { return JSON.stringify(a); } catch(e) { return String(a); } }
-      return String(a);
-    }).join(' ');
-    debugMessages.push({ time, type, msg });
-    if (debugMessages.length > 200) debugMessages.shift();
-    renderDebug();
-    // Also console log
-    const prefix = `[Test:${type}]`;
-    if (type === 'error') console.error(prefix, ...args);
-    else if (type === 'success') console.log(prefix, ...args);
-    else console.log(prefix, ...args);
-  }
-  function renderDebug() {
-    debugLog.innerHTML = debugMessages.map(m => {
-      let cls = 'debug-line';
-      if (m.type === 'error') cls += ' debug-error';
-      else if (m.type === 'success') cls += ' debug-success';
-      else if (m.type === 'info') cls += ' debug-info';
-      return `<div class="${cls}"><span class="debug-time">${m.time}</span>${escapeHtml(m.msg)}</div>`;
-    }).join('');
-    debugLog.scrollTop = debugLog.scrollHeight;
-  }
 
   // ================================================================
   // STATE
@@ -974,7 +941,8 @@
   let activeConversationId = null;
   let isLoading = false;
   let abortController = null;
-  let currentModel = 'Test';
+  let currentModel = 'llama-3.1-8b-instant';
+  let currentModelLabel = 'Llama 3.1 8B';
   let searchQuery = '';
   let settings = {
     theme: 'dark',
@@ -982,12 +950,11 @@
     sound: false,
     autoscroll: true,
     enterToSend: true,
-    fallback: true
+    apiKey: ''
   };
   let confirmCallback = null;
   let recognition = null;
   let isRecording = false;
-  let apiOnline = null; // null = unknown, true = online, false = offline
 
   // ================================================================
   // STORAGE
@@ -998,7 +965,8 @@
       localStorage.setItem('test_active_conversation', activeConversationId || '');
       localStorage.setItem('test_settings', JSON.stringify(settings));
       localStorage.setItem('test_model', currentModel);
-    } catch (e) { debugLog_('error', 'Save failed:', e.message); }
+      localStorage.setItem('test_model_label', currentModelLabel);
+    } catch (e) {}
   }
 
   function loadState() {
@@ -1016,6 +984,8 @@
       if (savedSettings) settings = { ...settings, ...JSON.parse(savedSettings) };
       const savedModel = localStorage.getItem('test_model');
       if (savedModel) currentModel = savedModel;
+      const savedLabel = localStorage.getItem('test_model_label');
+      if (savedLabel) currentModelLabel = savedLabel;
     } catch (e) {}
   }
 
@@ -1088,120 +1058,6 @@
     const div = document.createElement('div');
     div.textContent = text == null ? '' : String(text);
     return div.innerHTML;
-  }
-
-  // ================================================================
-  // FALLBACK RESPONSE GENERATOR
-  // ================================================================
-  function getFallbackResponse(userMessage, history) {
-    const msg = userMessage.toLowerCase().trim();
-
-    // Greetings
-    if (/^(hi|hello|hey|hola|howdy|sup|yo)\b/.test(msg)) {
-      return "Hello! 👋 I'm Test, your AI assistant. The live API isn't reachable right now, but I'm still here to chat. What can I help you with?";
-    }
-    if (/how are you|how's it going|how do you do/.test(msg)) {
-      return "I'm running in offline fallback mode, but I'm doing great! Thanks for asking. How can I help you today?";
-    }
-    if (/your name|who are you|what are you/.test(msg)) {
-      return "I'm **Test**, a simple AI assistant. I'm currently running in offline fallback mode because the live API endpoint isn't reachable. I can still chat using my built-in responses!";
-    }
-    if (/what can you do|help me|capabilities/.test(msg)) {
-      return "I can help with a variety of tasks! Here are some things you can try:\n\n• Ask me questions\n• Request code examples\n• Get explanations of concepts\n• Brainstorm ideas\n• And more!\n\nJust type your question and I'll do my best. (Note: I'm in offline mode right now, so responses are limited.)";
-    }
-    if (/thank|thanks|thx/.test(msg)) {
-      return "You're welcome! 😊 Is there anything else I can help you with?";
-    }
-    if (/bye|goodbye|see ya|farewell/.test(msg)) {
-      return "Goodbye! 👋 Feel free to come back anytime. Have a great day!";
-    }
-    if (/joke|funny/.test(msg)) {
-      const jokes = [
-        "Why don't scientists trust atoms? Because they make up everything! 🧪",
-        "Why did the scarecrow win an award? Because he was outstanding in his field! 🌾",
-        "I told my computer I needed a break, and it said 'No problem, I'll go to sleep.' 💤",
-        "Why do programmers prefer dark mode? Because light attracts bugs! 🐛"
-      ];
-      return jokes[Math.floor(Math.random() * jokes.length)];
-    }
-    if (/weather/.test(msg)) {
-      return "I don't have access to live weather data right now. Try checking a weather app or website like weather.com for accurate forecasts! ☀️🌧️";
-    }
-    if (/time|date/.test(msg)) {
-      return `The current date and time is: **${new Date().toLocaleString()}**`;
-    }
-    if (/code|program|javascript|python|function/.test(msg)) {
-      return "Here's a simple example:\n\n```javascript\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet('World'));\n```\n\nIs there a specific language or task you'd like help with? (Note: I'm in offline mode.)";
-    }
-    if (/api|endpoint|server|error|not working/.test(msg)) {
-      return `I'm currently unable to reach the live API endpoint at:\n\n\`${API_URL}\`\n\nThe endpoint returns a 404 status, which means it either doesn't exist or is misconfigured. I'm using offline fallback responses until the API is available. You can check the **Debug console** (Ctrl+D) for details.`;
-    }
-
-    // Question detection
-    if (/\?$/.test(msg) || /^(what|why|how|when|where|who|which|can|could|should|would|is|are|do|does|did)\b/.test(msg)) {
-      const replies = [
-        "That's an interesting question! I'm in offline fallback mode right now, so I can only give limited answers. Could you rephrase or try a different question?",
-        "I'd love to help with that, but the live API isn't currently reachable. My offline responses are quite limited. Try asking something simpler!",
-        "Hmm, I'm not able to fully answer that in offline mode. The API endpoint needs to be fixed for me to give you a proper response.",
-        "Good question! Unfortunately, I'm running on limited offline responses at the moment. Please check the API status in the top bar."
-      ];
-      return replies[Math.floor(Math.random() * replies.length)];
-    }
-
-    // Default responses
-    const defaults = [
-      `I hear you saying: "${userMessage}". I'm in offline fallback mode right now, so my responses are limited. The live API endpoint appears to be unavailable.`,
-      `Thanks for your message! I'm currently running on offline fallback responses because the API endpoint isn't reachable. Once the API is back online, I'll be much more helpful!`,
-      `I understand. Unfortunately, I can't give a full response right now since the API is offline. The endpoint \`${API_URL}\` returns a 404 error.`,
-      `Got it! I'm in offline mode at the moment. The API endpoint needs to be fixed for me to provide real responses. Check the Debug console for more info.`
-    ];
-    return defaults[Math.floor(Math.random() * defaults.length)];
-  }
-
-  // ================================================================
-  // API STATUS CHECK
-  // ================================================================
-  async function checkApiStatus() {
-    debugLog_('info', 'Checking API status...', API_URL);
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'ping' }] }),
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
-      if (res.ok) {
-        apiOnline = true;
-        updateStatusBadge(true);
-        debugLog_('success', 'API is ONLINE. Status:', res.status);
-      } else {
-        apiOnline = false;
-        updateStatusBadge(false);
-        debugLog_('error', 'API is OFFLINE. Status:', res.status, res.statusText);
-      }
-    } catch (err) {
-      apiOnline = false;
-      updateStatusBadge(false);
-      debugLog_('error', 'API check failed:', err.message);
-    }
-  }
-
-  function updateStatusBadge(online) {
-    if (online) {
-      statusBadge.classList.add('online');
-      statusText.textContent = 'Online';
-      statusBadge.title = 'API is reachable';
-    } else {
-      statusBadge.classList.remove('online');
-      statusText.textContent = 'Offline';
-      statusBadge.title = 'API unreachable — using fallback responses';
-    }
   }
 
   // ================================================================
@@ -1366,10 +1222,20 @@
     welcome.className = 'welcome-screen';
     welcome.innerHTML = `
       <div class="welcome-logo">
-        <svg viewBox="0 0 24 24"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729z"/></svg>
       </div>
       <h1 class="welcome-title">How can I help you today?</h1>
-      <p class="welcome-subtitle">I'm <strong>${escapeHtml(currentModel)}</strong>, your AI assistant. I remember our conversation and can help with a wide range of tasks.</p>
+      <p class="welcome-subtitle">I'm <strong>${escapeHtml(currentModelLabel)}</strong>, powered by Groq. I remember our conversation and can help with a wide range of tasks.</p>
+      ${!settings.apiKey ? `
+      <div class="setup-banner">
+        <h3>⚡ Setup required (one time)</h3>
+        <p>To get real AI responses, you need a free Groq API key. It takes 30 seconds:</p>
+        <p>1. Visit <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a><br>
+           2. Sign up (free, no card)<br>
+           3. Click "Create API Key"<br>
+           4. Paste it in <a href="#" id="openSettingsLink">Settings</a></p>
+      </div>
+      ` : ''}
       <div class="suggestion-grid">
         <button class="suggestion-card" data-prompt="Explain quantum computing in simple terms with examples">
           <span class="sugg-title">💡 Explain a concept</span>
@@ -1391,6 +1257,15 @@
     `;
 
     chatInner.appendChild(welcome);
+
+    const settingsLink = welcome.querySelector('#openSettingsLink');
+    if (settingsLink) {
+      settingsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('settingsModal');
+        setTimeout(() => $('apiKeyInput').focus(), 100);
+      });
+    }
 
     welcome.querySelectorAll('.suggestion-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -1505,6 +1380,13 @@
     const text = messageInput.value.trim();
     if (!text) return;
 
+    if (!settings.apiKey) {
+      showToast('Please add your Groq API key in Settings', 'error');
+      openModal('settingsModal');
+      setTimeout(() => $('apiKeyInput').focus(), 100);
+      return;
+    }
+
     let conv = getActiveConversation();
     if (!conv) {
       conv = createConversation(true);
@@ -1533,71 +1415,59 @@
     const typingEl = showTypingIndicator();
 
     let botReply = null;
-    let usedFallback = false;
 
     try {
-      debugLog_('info', 'POST →', API_URL, { model: currentModel, msgs: conv.messages.length });
       abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 30000);
+      const timeoutId = setTimeout(() => abortController.abort(), 60000);
 
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
+          'Authorization': `Bearer ${settings.apiKey}`
         },
         body: JSON.stringify({
-          messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
           model: currentModel,
-          temperature: settings.temperature / 10
+          messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
+          temperature: settings.temperature / 10,
+          max_tokens: 2048
         }),
         signal: abortController.signal
       });
 
       clearTimeout(timeoutId);
-      debugLog_('info', '← Response status:', response.status, response.statusText);
 
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
-        debugLog_('error', 'HTTP error:', response.status, errText.slice(0, 200));
-        throw new Error(`API error ${response.status}: ${response.statusText}`);
+        let errMsg = `API error ${response.status}`;
+        try {
+          const errData = JSON.parse(errText);
+          if (errData?.error?.message) errMsg = errData.error.message;
+          else if (errData?.message) errMsg = errData.message;
+        } catch (_) {}
+        if (response.status === 401) {
+          errMsg = 'Invalid API key. Please check your Groq API key in Settings.';
+        }
+        throw new Error(errMsg);
       }
 
-      const rawText = await response.text();
-      debugLog_('info', 'Response body length:', rawText.length);
+      const data = await response.json();
+      botReply = data?.choices?.[0]?.message?.content;
 
-      let data;
-      try {
-        data = JSON.parse(rawText);
-      } catch (e) {
-        debugLog_('error', 'JSON parse failed, raw:', rawText.slice(0, 200));
-        throw new Error('Invalid JSON response from API');
-      }
-
-      debugLog_('info', 'Parsed data keys:', Object.keys(data));
-      botReply = data.content || data.message || data.reply || data.response || data.text;
       if (!botReply) {
-        debugLog_('error', 'No reply field in response:', data);
-        throw new Error('No reply content found in API response');
+        throw new Error('Empty response from API');
       }
 
-      apiOnline = true;
       updateStatusBadge(true);
-      debugLog_('success', 'Got reply, length:', botReply.length);
 
     } catch (err) {
-      debugLog_('error', 'Fetch failed:', err.name, err.message);
-      if (settings.fallback) {
-        usedFallback = true;
-        botReply = getFallbackResponse(text, conv.messages);
-        debugLog_('info', 'Using fallback response');
+      if (err.name === 'AbortError') {
+        botReply = '_[Generation stopped by user]_';
       } else {
-        botReply = `⚠️ **API Error:** ${err.message}\n\nTip: Enable "Offline fallback mode" in Settings to get local responses when the API is unavailable.`;
+        botReply = `⚠️ **Error:** ${err.message}\n\nCheck your API key in Settings, or try again in a moment.`;
+        updateStatusBadge(false);
       }
-      apiOnline = false;
-      updateStatusBadge(false);
     } finally {
-      clearTimeout(0);
       abortController = null;
     }
 
@@ -1619,6 +1489,12 @@
     const conv = getActiveConversation();
     if (!conv || conv.messages.length < 2 || isLoading) return;
 
+    if (!settings.apiKey) {
+      showToast('Please add your Groq API key in Settings', 'error');
+      openModal('settingsModal');
+      return;
+    }
+
     if (conv.messages[conv.messages.length - 1].role === 'assistant') {
       conv.messages.pop();
     }
@@ -1632,22 +1508,22 @@
     const typingEl = showTypingIndicator();
 
     let botReply = null;
-    const lastUserMsg = conv.messages.filter(m => m.role === 'user').pop()?.content || '';
 
     try {
       abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 30000);
+      const timeoutId = setTimeout(() => abortController.abort(), 60000);
 
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
+          'Authorization': `Bearer ${settings.apiKey}`
         },
         body: JSON.stringify({
-          messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
           model: currentModel,
-          temperature: settings.temperature / 10
+          messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
+          temperature: settings.temperature / 10,
+          max_tokens: 2048
         }),
         signal: abortController.signal
       });
@@ -1655,18 +1531,13 @@
       clearTimeout(timeoutId);
       if (!response.ok) throw new Error(`API error ${response.status}`);
       const data = await response.json();
-      botReply = data.content || data.message || data.reply || data.response;
-      if (!botReply) throw new Error('No reply content');
-      apiOnline = true;
+      botReply = data?.choices?.[0]?.message?.content;
+      if (!botReply) throw new Error('Empty response');
       updateStatusBadge(true);
     } catch (err) {
-      debugLog_('error', 'Regenerate failed:', err.message);
-      if (settings.fallback) {
-        botReply = getFallbackResponse(lastUserMsg, conv.messages);
-      } else {
-        botReply = `⚠️ **Regenerate Error:** ${err.message}`;
-      }
-      apiOnline = false;
+      botReply = err.name === 'AbortError'
+        ? '_[Generation stopped]_'
+        : `⚠️ **Error:** ${err.message}`;
       updateStatusBadge(false);
     } finally {
       abortController = null;
@@ -1844,7 +1715,7 @@
     $('soundToggle').classList.toggle('on', settings.sound);
     $('autoscrollToggle').classList.toggle('on', settings.autoscroll);
     $('enterToggle').classList.toggle('on', settings.enterToSend);
-    $('fallbackToggle').classList.toggle('on', settings.fallback);
+    $('apiKeyInput').value = settings.apiKey || '';
     document.querySelectorAll('[data-theme-opt]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
@@ -1854,11 +1725,23 @@
     } else {
       icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
     }
-    modelLabel.textContent = currentModel;
+    modelLabel.textContent = currentModelLabel;
     document.querySelectorAll('.dropdown-item').forEach(item => {
       item.classList.toggle('active', item.dataset.model === currentModel);
     });
-    $('apiEndpointDisplay').textContent = API_URL;
+    updateStatusBadge(!!settings.apiKey);
+  }
+
+  function updateStatusBadge(online) {
+    if (online) {
+      statusBadge.classList.add('online');
+      statusText.textContent = 'Ready';
+      statusBadge.title = 'API key set — ready to chat';
+    } else {
+      statusBadge.classList.remove('online');
+      statusText.textContent = 'Setup';
+      statusBadge.title = 'Add API key in Settings';
+    }
   }
 
   // ================================================================
@@ -1935,12 +1818,13 @@
     document.querySelectorAll('.dropdown-item').forEach(item => {
       item.addEventListener('click', () => {
         currentModel = item.dataset.model;
-        modelLabel.textContent = currentModel;
+        currentModelLabel = item.querySelector('.dropdown-item-title').textContent;
+        modelLabel.textContent = currentModelLabel;
         document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
         modelDropdown.classList.remove('open');
         saveState();
-        showToast(`Model: ${currentModel}`, 'info');
+        showToast(`Model: ${currentModelLabel}`, 'info');
       });
     });
     document.addEventListener('click', () => modelDropdown.classList.remove('open'));
@@ -1962,13 +1846,16 @@
       copyToClipboard(window.location.href).then(() => showToast('Link copied'));
     });
     statusBadge.addEventListener('click', () => {
-      showToast(apiOnline === true ? 'API is online ✓' : 'API offline — using fallback', apiOnline === true ? 'check' : 'error');
+      if (!settings.apiKey) {
+        openModal('settingsModal');
+        setTimeout(() => $('apiKeyInput').focus(), 100);
+      } else {
+        showToast('API key is set — ready to chat ✓', 'check');
+      }
     });
 
     $('settingsBtn').addEventListener('click', () => openModal('settingsModal'));
     $('shortcutsBtn').addEventListener('click', () => openModal('shortcutsModal'));
-    $('debugBtn').addEventListener('click', () => debugPanel.classList.toggle('open'));
-    $('debugClose').addEventListener('click', () => debugPanel.classList.remove('open'));
     $('exportAllBtn').addEventListener('click', exportAllData);
     $('clearAllBtn').addEventListener('click', () => {
       showConfirm('Clear all chats?', 'This will permanently delete all conversations.', () => {
@@ -2016,15 +1903,20 @@
       settings.enterToSend = !settings.enterToSend;
       e.target.classList.toggle('on', settings.enterToSend); saveState();
     });
-    $('fallbackToggle').addEventListener('click', (e) => {
-      settings.fallback = !settings.fallback;
-      e.target.classList.toggle('on', settings.fallback); saveState();
-    });
 
-    $('testApiBtn').addEventListener('click', async () => {
-      showToast('Testing API...', 'info');
-      await checkApiStatus();
-      showToast(apiOnline ? 'API is online ✓' : 'API is offline ✗', apiOnline ? 'check' : 'error');
+    // Save settings button
+    $('saveSettingsBtn').addEventListener('click', () => {
+      const key = $('apiKeyInput').value.trim();
+      settings.apiKey = key;
+      saveState();
+      updateStatusBadge(!!key);
+      closeModal('settingsModal');
+      if (key) {
+        showToast('API key saved ✓', 'check');
+        renderActiveConversation();
+      } else {
+        showToast('API key cleared', 'info');
+      }
     });
 
     $('exportDataBtn').addEventListener('click', exportAllData);
@@ -2045,7 +1937,6 @@
       else if (mod && e.key.toLowerCase() === 'j') { e.preventDefault(); settings.theme = settings.theme === 'dark' ? 'light' : 'dark'; applySettings(); saveState(); }
       else if (mod && e.key === ',') { e.preventDefault(); openModal('settingsModal'); }
       else if (mod && e.key.toLowerCase() === 'e') { e.preventDefault(); exportChat(getActiveConversation()); }
-      else if (mod && e.key.toLowerCase() === 'd') { e.preventDefault(); debugPanel.classList.toggle('open'); }
       else if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
         modelDropdown.classList.remove('open');
@@ -2065,7 +1956,6 @@
   // INIT
   // ================================================================
   function init() {
-    debugLog_('info', 'Initializing Test chatbot...');
     loadState();
 
     if (conversations.length === 0) createConversation(true);
@@ -2084,9 +1974,13 @@
     initEvents();
     messageInput.focus();
 
-    // Check API status after a short delay
-    setTimeout(checkApiStatus, 600);
-    debugLog_('info', 'Init complete. Conversations loaded:', conversations.length);
+    // If no API key, open settings after a moment
+    if (!settings.apiKey) {
+      setTimeout(() => {
+        openModal('settingsModal');
+        setTimeout(() => $('apiKeyInput').focus(), 200);
+      }, 500);
+    }
   }
 
   init();
